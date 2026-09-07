@@ -1,0 +1,32 @@
+# Map these 1:1 onto NvEnc / nvv4l2h264enc / ffmpeg h264_nvenc.
+
+ffmpeg_nvenc:
+  preset: p1
+  tune: ull
+  rc: cbr
+  b:v: 30M
+  maxrate: 30M
+  bufsize: 250k
+  g: 1
+  bf: 0
+  profile:v: high
+  zerolatency: 1
+  delay: 0
+
+jetson_nvv4l2h264enc:
+  iframeinterval: 1
+  idrinterval: 1
+  insert-sps-pps: true
+  maxperf-enable: true
+  bitrate: 30000000
+  control-rate: constant_bitrate
+  num-B-Frames: 0
+  profile: High
+  preset-level: UltraFastPreset
+
+android_mediacodec:
+  mime: video/avc
+  KEY_LOW_LATENCY: 1
+  KEY_PRIORITY: 0          # realtime
+  PARAMETER_KEY_LOW_LATENCY: 1
+  output: surface          # never ByteBuffer for preview
