@@ -1,0 +1,51 @@
+# Photon-to-photon budget for robot-camera -> Quest/Pico preview.
+# Units: milliseconds. Tune per cell after LED-panel measurement.
+
+target:
+  p50_ms: 50
+  p95_ms: 80
+  preview_fps: 60
+  preview_layout: sbs   # side-by-side 2560x720
+  preview_bitrate_mbps: 30
+
+stages:
+  exposure_readout: { target: 8, max: 16 }
+  driver_dqbuf: { target: 2, max: 4 }
+  gpu_preprocess: { target: 2, max: 4 }
+  nvenc_all_intra: { target: 5, max: 8 }
+  rtp_send: { target: 1, max: 2 }
+  air_wifi6: { target: 4, max: 8 }
+  mediacodec_ll: { target: 6, max: 10 }
+  openxr_display: { target: 11, max: 16 }
+
+preview_encoder:
+  codec: h264
+  profile: high
+  gop: 1
+  bframes: 0
+  rc: cbr
+  preset: ull          # NVENC ultra-low-latency / Jetson maxperf
+  input: nv12_dmabuf
+  drop_policy: latest_wins
+  recv_queue_frames: 1
+
+record_encoder:
+  # Separate path. Must never block preview.
+  codec: hevc
+  gop: 30
+  fps: 30
+  bitrate_mbps: 20
+  sink: mcap
+
+network:
+  video_port: 50020
+  tracking_port: 50021
+  session_port: 50022
+  mtu: 1200
+  robot_uplink: ethernet_to_ap
+  headset_band: "5ghz_or_6ghz_exclusive"
+
+safety:
+  tracking_loss_hold_ms: 50
+  heartbeat_hold_ms: 150
+  preview_degrade_after_incomplete_frames: 15

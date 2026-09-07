@@ -12,3 +12,5 @@
 /out
 .externalNativeBuild
 .cxx
+__pycache__/
+*.py[cod]
